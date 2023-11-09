@@ -1,13 +1,113 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
-    <link rel="icon" href="/favicon.ico">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>符文之地大地图——宇宙——英雄联盟</title>
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        font-weight: normal;
+      }
+      body {
+        overflow: hidden;
+      }
+      #app {
+        overflow: hidden;
+        width: 100%;
+        height: 100%;
+      }
+      #wrapper {
+        position: fixed;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        height: 100vh;
+        width: 100vw;
+        background-image: url('/images/loading-background.jpg');
+        background-repeat: no-repeat;
+        background-size: cover;
+        background-position: center;
+        opacity: 1;
+        transition: opacity 400ms linear;
+      }
+      #preloader {
+        border: 1px solid #c8aa6e;
+        height: 20px;
+        position: relative;
+        width: 400px;
+        max-width: 70%;
+      }
+      #loading-bar-inner {
+        position: absolute;
+        left: 2px;
+        top: 2px;
+        right: 2px;
+        bottom: 2px;
+        background-color: #c8aa6e;
+        transform: scaleX(0.02);
+        transform-origin: 0% 50%;
+      }
+    </style>
   </head>
   <body>
     <div id="app"></div>
+    <div id="wrapper">
+      <div id="preloader">
+        <div id="loading-bar-inner" :style="{ transform: `scaleX(${loadResourceProgress})` }"></div>
+      </div>
+    </div>
+    <script>
+      ;(function () {
+        const node = document.getElementById('loading-bar-inner')
+        const backgroundNode = document.getElementById('wrapper')
+        let loaded = 0
+        let timeout
+        const SPEED = 10000
+        const SHOW_THRESHOLD = Math.floor(Math.random() * 0.5) + 0.7
+        const FINISH_THRESHOLD = Math.floor(Math.random() * 0.7) + 0.95
+        const SLOW_SPEED = Math.floor(Math.random() * 2) + 4
+
+        function increase() {
+          const diff = 1 - loaded
+          const rand = Math.random() * Math.min(0.2, diff)
+          const duration = rand * SPEED * (loaded > SHOW_THRESHOLD ? SLOW_SPEED : 1)
+          node.style.transition = 'transform ' + duration + 'ms'
+          node.offsetWidth
+          loaded += rand
+          node.style.transform = 'scaleX(' + loaded + ')'
+          if (loaded < FINISH_THRESHOLD) {
+            timeout = setTimeout(increase, duration)
+          } else {
+            timeout = null
+          }
+        }
+        // 加载完成
+        window.done = function done(callback = () => {}) {
+          timeout && clearTimeout(timeout)
+          const duration = 300
+          node.style.transition = 'transform ' + duration + 'ms'
+          node.offsetWidth
+          node.style.transform = 'scaleX(1)'
+          setTimeout(function () {
+            backgroundNode.style.opacity = '0'
+            setTimeout(function () {
+              const node = document.getElementById('wrapper')
+              if (node) node.parentNode.removeChild(node)
+              callback()
+            }, duration)
+          }, 200)
+        }
+
+        increase()
+      })()
+    </script>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>
