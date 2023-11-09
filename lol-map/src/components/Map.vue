@@ -1,17 +1,26 @@
 <script setup>
-import L from 'leaflet'
+import * as L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import { onMounted } from 'vue'
+import devTool from './devTool'
+import loadTiles from './loadTiles'
 onMounted(() => {
-  const map = L.map('map').setView([51.505, -0.09], 13)
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-  }).addTo(map)
-  L.marker([51.5, -0.09]).addTo(map).bindPopup('A pretty CSS popup.<br> Easily customizable.').openPopup()
+  const maxBounds = L.latLngBounds(L.latLng(0, 0), L.latLng(128, 128))
+  const center = maxBounds.getCenter()
+  const map = L.map('map', {
+    attributionControl: false,
+    crs: L.CRS.Simple,
+    minZoom: 2,
+    maxBounds
+  })
+  loadTiles(map, maxBounds)
+  map.setView(center, 4)
+  devTool(map)
 })
 </script>
 
 <template>
+  <div id="zoom"></div>
   <div id="map"></div>
 </template>
 
@@ -19,5 +28,6 @@ onMounted(() => {
 #map {
   height: 100vh;
   width: 100vw;
+  background-color: black;
 }
 </style>
