@@ -1,11 +1,11 @@
 import * as L from 'leaflet'
-export default (map, maxBounds) => {
+export default map => {
   // 根据同一张图模拟 2-4 级的贴图
   for (let i = 2; i <= 4; i++) {
     L.tileLayer('/images/tiles/terrain_z1.jpg', {
       minZoom: i,
       maxZoom: i,
-      bounds: maxBounds,
+      bounds: map.options.maxBounds,
       tileSize: 256 * Math.pow(2, i - 1)
     }).addTo(map)
   }
@@ -22,6 +22,19 @@ export default (map, maxBounds) => {
       maxZoom: 5,
       bounds: L.latLngBounds(L.latLng(startLat, startLng), L.latLng(startLat - 16, startLng + 16)),
       tileSize: 256 * 2
+    }).addTo(map)
+  }
+  for (let i = 1; i <= 64; i++) {
+    const row = Math.floor((i - 1) / 8)
+    const col = (i - 1) % 8
+    const startLat = 128 - row * 16
+    const startLng = col * 16
+    const imageIndex = (i + '').padStart(2, '0')
+    L.tileLayer(`/images/tiles/terrain_z2_${imageIndex}.jpg`, {
+      minZoom: 6,
+      maxZoom: 6,
+      bounds: L.latLngBounds(L.latLng(startLat, startLng), L.latLng(startLat - 16, startLng + 16)),
+      tileSize: 256 * 4
     }).addTo(map)
   }
 }

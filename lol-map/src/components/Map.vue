@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css'
 import { onMounted } from 'vue'
 import devTool from './devTool'
 import loadTiles from './loadTiles'
+import loadFog from './loadFog'
 onMounted(() => {
   const maxBounds = L.latLngBounds(L.latLng(0, 0), L.latLng(128, 128))
   const center = maxBounds.getCenter()
@@ -13,9 +14,10 @@ onMounted(() => {
     minZoom: 2,
     maxBounds
   })
-  loadTiles(map, maxBounds)
+  loadTiles(map)
   map.setView(center, 4)
   devTool(map)
+  loadFog(map)
 })
 </script>
 
