@@ -1,35 +1,24 @@
 <script setup>
-import * as L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import { onMounted } from 'vue'
-import devTool from './devTool'
+import InitMap from './initMap.js'
 import loadTiles from './loadTiles'
-import loadFog from './loadFog'
 onMounted(() => {
-  const maxBounds = L.latLngBounds(L.latLng(0, 0), L.latLng(128, 128))
-  const center = maxBounds.getCenter()
-  const map = L.map('map', {
-    attributionControl: false,
-    crs: L.CRS.Simple,
-    minZoom: 2,
-    maxBounds
+  const { scene, camera, renderer } = InitMap()
+  loadTiles(scene)
+  // 在屏幕上展示 camera 的层级
+  const zoom = document.getElementById('zoom')
+  zoom.innerHTML = camera.zoom
+  camera.addEventListener('zoom', () => {
+    zoom.innerHTML = camera.zoom
   })
-  loadTiles(map)
-  map.setView(center, 4)
-  devTool(map)
-  loadFog(map)
+
+  window.done()
 })
 </script>
 
 <template>
+  <canvas id="map"></canvas>
   <div id="zoom"></div>
-  <div id="map"></div>
 </template>
 
-<style scoped>
-#map {
-  height: 100vh;
-  width: 100vw;
-  background-color: black;
-}
-</style>
+<style scoped></style>
